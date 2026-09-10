@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jay Thakor — Senior Unity Developer</title>
+<meta name="description" content="Jay Thakor. Senior Unity developer, 6+ years. Gameplay, multiplayer and XR across PC, headset and mobile.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0C0617;
+  --bg2:#130A21;
+  --panel:#1A0F2C;
+  --panel2:#22143A;
+  --line:#35204F;
+  --dim:#9B8CC0;
+  --txt:#F2ECFF;
+
+  --mag:#FF3D8B;
+  --cyan:#2EE6FF;
+  --amber:#FFB020;
+  --mint:#4DFFA8;
+
+  --d:"Rajdhani",ui-sans-serif,system-ui,sans-serif;
+  --b:"Barlow",ui-sans-serif,system-ui,-apple-system,sans-serif;
+
+  --gut:clamp(1.15rem,4vw,3.5rem);
+  --max:1120px;
+  --rail:230px;
+  --ez:cubic-bezier(.2,.7,.3,1);
+  --pop:cubic-bezier(.3,1.5,.5,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--txt);
+  font-family:var(--b);font-size:1rem;line-height:1.65;font-weight:300;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(900px 500px at 78% 8%, rgba(255,61,139,.16), transparent 62%),
+    radial-gradient(700px 460px at 8% 70%, rgba(46,230,255,.10), transparent 62%);
+}
+h1,h2,h3,h4{font-family:var(--d);font-weight:700;line-height:1.05;margin:0;letter-spacing:.005em}
+p{margin:0}ul{margin:0;padding:0;list-style:none}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+::selection{background:var(--mag);color:#fff}
+
+/* ── xp scroll bar ── */
+#xp{position:fixed;top:0;left:0;height:3px;width:0;z-index:200;
+  background:linear-gradient(90deg,var(--cyan),var(--mag),var(--amber));box-shadow:0 0 12px rgba(255,61,139,.7)}
+
+/* ── boot ── */
+#boot{position:fixed;inset:0;z-index:300;background:var(--bg);display:grid;place-items:center;gap:1rem;transition:opacity .5s var(--ez)}
+#boot.off{opacity:0;pointer-events:none}
+.boot__w{width:min(320px,72vw);text-align:center}
+.boot__n{font-family:var(--d);font-weight:700;font-size:2.6rem;letter-spacing:.32em;margin-left:.32em;color:var(--txt)}
+.boot__t{font-family:var(--d);font-weight:600;font-size:.78rem;letter-spacing:.22em;color:var(--dim);margin-bottom:1rem}
+.boot__bar{height:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.boot__bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--mag))}
+.boot__s{font-size:.72rem;color:var(--dim);margin-top:.7rem;letter-spacing:.14em;font-family:var(--d)}
+
+/* ── layout ── */
+.wrap{position:relative;z-index:1}
+.shell{max-width:var(--max);margin-inline:auto;padding-inline:var(--gut)}
+
+.rail{display:none}
+@media (min-width:1180px){
+  .rail{
+    display:block;position:fixed;left:max(1.2rem,calc(50vw - var(--max)/2 - var(--rail) - .5rem));
+    top:50%;transform:translateY(-50%);z-index:60;width:var(--rail);
+  }
+  .rail li a{
+    display:flex;align-items:center;gap:.7rem;padding:.42rem 0;
+    font-family:var(--d);font-weight:600;font-size:.92rem;letter-spacing:.1em;color:var(--dim);
+    transition:color .25s var(--ez),transform .25s var(--ez);
+  }
+  .rail li a::before{
+    content:"";width:0;height:2px;background:var(--mag);transition:width .28s var(--ez);flex:none;
+  }
+  .rail li a:hover{color:var(--txt);transform:translateX(3px)}
+  .rail li a[aria-current="true"]{color:var(--txt)}
+  .rail li a[aria-current="true"]::before{width:22px}
+  .rail__tag{font-family:var(--d);font-size:.68rem;letter-spacing:.2em;color:var(--line);margin-bottom:.9rem}
+}
+
+.bar{
+  position:sticky;top:0;z-index:80;background:color-mix(in srgb,var(--bg) 86%,transparent);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+}
+.bar__in{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:58px}
+.sig{display:flex;align-items:center;gap:.6rem;font-family:var(--d);font-weight:700;font-size:1.05rem;letter-spacing:.16em}
+.sig i{width:9px;height:9px;background:var(--mint);border-radius:50%;box-shadow:0 0 10px var(--mint);animation:blip 2.4s infinite}
+@keyframes blip{0%,100%{opacity:1}50%{opacity:.25}}
+.bar nav{display:flex;gap:1.1rem;font-family:var(--d);font-weight:600;font-size:.85rem;letter-spacing:.1em;color:var(--dim)}
+.bar nav a:hover{color:var(--txt)}
+@media (max-width:760px){.bar nav{display:none}}
+
+.sec{padding-block:clamp(3.5rem,9vh,6.5rem);border-top:1px solid var(--line)}
+.sec__h{margin-bottom:clamp(1.8rem,4vw,2.8rem);display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.sec__h h2{font-size:clamp(1.7rem,4vw,2.6rem);letter-spacing:.02em}
+.sec__h p{color:var(--dim);max-width:52ch;margin-top:.5rem;font-size:.98rem}
+.cnt{font-family:var(--d);font-weight:600;font-size:.8rem;letter-spacing:.14em;color:var(--dim);
+  border:1px solid var(--line);padding:.3rem .7rem;white-space:nowrap}
+
+/* ── profile ── */
+.pro{position:relative;padding-block:clamp(3rem,9vh,5.5rem)}
+.pro__grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:clamp(1.5rem,4vw,3rem);align-items:center}
+#radar{width:300px;height:300px;display:block;justify-self:end}
+.tagline{font-family:var(--d);font-weight:600;font-size:.82rem;letter-spacing:.24em;color:var(--cyan);margin-bottom:1rem}
+.pro h1{font-size:clamp(3rem,10vw,6.4rem);letter-spacing:.01em;line-height:.92}
+.pro h1 b{display:block;color:var(--mag);font-weight:700}
+.pro__role{font-family:var(--d);font-weight:600;font-size:clamp(1rem,2vw,1.35rem);letter-spacing:.06em;color:var(--txt);margin-top:.9rem}
+.pro__lead{color:var(--dim);max-width:50ch;margin-top:1.1rem;line-height:1.7}
+.pro__lead b{color:var(--txt);font-weight:500}
+.stats{display:flex;flex-wrap:wrap;gap:0;margin-top:1.8rem;border:1px solid var(--line)}
+.stats div{padding:.75rem 1.1rem;border-right:1px solid var(--line);flex:1 1 auto;min-width:96px}
+.stats div:last-child{border-right:none}
+.stats dt{font-family:var(--d);font-size:.68rem;letter-spacing:.16em;color:var(--dim)}
+.stats dd{margin:0;font-family:var(--d);font-weight:700;font-size:1.35rem;color:var(--txt);line-height:1.2}
+.acts{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.8rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;font-family:var(--d);font-weight:700;
+  font-size:.92rem;letter-spacing:.1em;padding:.66rem 1.35rem;
+  border:1px solid var(--line);background:var(--panel);position:relative;overflow:hidden;
+  transition:border-color .25s var(--ez),color .25s var(--ez),transform .15s var(--ez);
+}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);transform:translateX(-120%)}
+.btn:hover{border-color:var(--mag);transform:translateY(-2px)}
+.btn:hover::after{animation:sheen .6s var(--ez)}
+@keyframes sheen{to{transform:translateX(120%)}}
+.btn--p{background:var(--mag);border-color:var(--mag);color:#12061B}
+.btn--p:hover{border-color:var(--mag);background:#FF5C9E}
+
+/* ── library ── */
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:1.1rem}
+.game{
+  --a:var(--mag);
+  position:relative;text-align:left;border:1px solid var(--line);background:var(--panel);
+  overflow:hidden;transform-style:preserve-3d;transition:border-color .3s var(--ez),box-shadow .3s var(--ez);
+}
+.game:hover,.game:focus-visible{border-color:var(--a);box-shadow:0 14px 40px -18px var(--a)}
+.game__art{position:relative;height:150px;overflow:hidden;background:var(--bg2);border-bottom:1px solid var(--line)}
+.game__art svg{position:absolute;inset:0;width:100%;height:100%}
+.game__glare{position:absolute;inset:0;opacity:0;background:radial-gradient(220px 220px at var(--mx,50%) var(--my,50%),rgba(255,255,255,.16),transparent 65%);transition:opacity .3s var(--ez)}
+.game:hover .game__glare{opacity:1}
+.game__b{
+  position:absolute;top:.6rem;left:.6rem;font-family:var(--d);font-weight:700;font-size:.66rem;
+  letter-spacing:.14em;background:var(--a);color:#12061B;padding:.12rem .45rem;
+}
+.game__t{padding:.9rem 1rem 1.05rem}
+.game__t h3{font-size:1.15rem;letter-spacing:.02em}
+.game__t p{font-size:.85rem;color:var(--dim);margin-top:.2rem}
+.game__go{
+  display:flex;align-items:center;gap:.4rem;margin-top:.7rem;font-family:var(--d);
+  font-weight:600;font-size:.76rem;letter-spacing:.14em;color:var(--a);
+}
+
+/* ── modal ── */
+#veil{
+  position:fixed;inset:0;z-index:150;display:none;place-items:center;padding:1rem;
+  background:rgba(6,3,13,.82);backdrop-filter:blur(6px);
+}
+#veil.on{display:grid}
+.sheetx{
+  --a:var(--mag);
+  width:min(760px,100%);max-height:88vh;overflow:auto;background:var(--panel);
+  border:1px solid var(--a);position:relative;
+  animation:boot .4s var(--ez);
+}
+@keyframes boot{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+.sheetx__top{height:5px;background:var(--a)}
+.sheetx__b{padding:clamp(1.3rem,3.5vw,2.2rem)}
+.sheetx h3{font-size:clamp(1.5rem,3.5vw,2.1rem);padding-right:2.6rem}
+.sheetx__m{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin-top:.5rem;font-family:var(--d);
+  font-weight:600;font-size:.8rem;letter-spacing:.1em;color:var(--dim)}
+.sheetx__d{margin-top:1.1rem;color:var(--dim);line-height:1.75;max-width:64ch}
+.sheetx h4{font-family:var(--d);font-size:.85rem;letter-spacing:.18em;color:var(--a);margin:1.7rem 0 .8rem}
+.own li{position:relative;padding-left:1.5rem;margin-bottom:.55rem;line-height:1.6;max-width:62ch}
+.own li::before{content:"";position:absolute;left:0;top:.6em;width:8px;height:8px;border:1px solid var(--a);transform:rotate(45deg)}
+.tg{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem}
+.tg li{font-family:var(--d);font-weight:500;font-size:.78rem;letter-spacing:.06em;
+  border:1px solid var(--line);padding:.2rem .6rem;color:var(--dim)}
+.x{position:absolute;top:1rem;right:1rem;width:36px;height:36px;border:1px solid var(--line);
+  font-family:var(--d);font-weight:700;font-size:1.1rem;transition:background .2s,color .2s,transform .25s var(--pop)}
+.x:hover{background:var(--mag);color:#12061B;transform:rotate(90deg)}
+
+/* ── achievements ── */
+.trophies{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.9rem}
+.tro{
+  --a:var(--amber);
+  position:relative;display:flex;gap:.9rem;align-items:flex-start;
+  border:1px solid var(--line);background:var(--panel);padding:.95rem 1rem;overflow:hidden;
+  opacity:.32;filter:saturate(.15);
+  transform:translateY(10px);
+  transition:opacity .5s var(--ez),filter .5s var(--ez),transform .5s var(--ez),border-color .3s var(--ez);
+}
+.tro.got{opacity:1;filter:none;transform:none}
+.tro.got::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.22) 50%,transparent 62%);
+  transform:translateX(-120%);animation:shine .85s .1s var(--ez)
+}
+@keyframes shine{to{transform:translateX(120%)}}
+.tro:hover{border-color:var(--a)}
+.tro__i{flex:none;width:42px;height:42px;display:grid;place-items:center;border:1px solid var(--a);color:var(--a)}
+.tro__i svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tro h3{font-size:1rem;letter-spacing:.03em}
+.tro p{font-size:.83rem;color:var(--dim);line-height:1.5;margin-top:.15rem}
+.tro__r{font-family:var(--d);font-weight:700;font-size:.62rem;letter-spacing:.16em;color:var(--a);margin-top:.4rem;display:block}
+
+/* ── skill tree ── */
+.tree{border:1px solid var(--line);background:var(--panel)}
+.tree__bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;
+  padding:.75rem 1rem;border-bottom:1px solid var(--line);background:var(--bg2)}
+.tree__pts{font-family:var(--d);font-weight:700;font-size:.85rem;letter-spacing:.14em;color:var(--cyan)}
+.tree__pts b{color:var(--txt)}
+.mini{font-family:var(--d);font-weight:600;font-size:.76rem;letter-spacing:.12em;
+  border:1px solid var(--line);padding:.32rem .8rem;transition:border-color .2s,color .2s}
+.mini:hover{border-color:var(--cyan);color:var(--cyan)}
+.tree__sc{overflow-x:auto;padding:1rem}
+.tree__sc svg{display:block;min-width:920px;width:100%;height:auto}
+.nd{cursor:pointer}
+.nd rect{fill:var(--bg2);stroke:var(--line);stroke-width:1.6;transition:fill .3s var(--ez),stroke .3s var(--ez)}
+.nd text{font-family:var(--d);font-weight:600;font-size:15px;fill:var(--dim);letter-spacing:.04em;pointer-events:none;transition:fill .3s var(--ez)}
+.nd:hover rect{stroke:var(--cyan)}
+.nd.scan rect{fill:#2A1642;stroke:var(--mag)}
+.nd.scan text{fill:var(--txt)}
+.nd.lit rect{stroke:var(--cyan);fill:#22143A}
+.nd.lit text{fill:var(--txt)}
+.nd.pulse rect{animation:np .6s var(--pop)}
+@keyframes np{0%{transform:scale(1)}45%{transform:scale(1.06)}100%{transform:scale(1)}}
+.nd rect{transform-box:fill-box;transform-origin:center}
+.lk{fill:none;stroke:var(--line);stroke-width:2;transition:stroke .3s var(--ez),stroke-width .3s var(--ez)}
+.lk.lit{stroke:var(--cyan);stroke-width:3}
+.tree__rd{border-top:1px solid var(--line);padding:1rem 1.1rem;background:var(--bg2);min-height:96px}
+.tree__rd strong{font-family:var(--d);font-weight:700;font-size:1.05rem;letter-spacing:.04em;display:block;margin-bottom:.2rem}
+.tree__rd span{color:var(--dim);font-size:.94rem;line-height:1.6;display:block;max-width:74ch}
+
+/* ── about / dialogue ── */
+.talk{display:grid;grid-template-columns:200px minmax(0,1fr);gap:clamp(1.2rem,3vw,2.2rem);align-items:start}
+.face{border:1px solid var(--line);background:var(--panel);padding:1rem;text-align:center}
+.face__h{position:relative;width:112px;height:112px;margin:0 auto .8rem}
+.face__h svg{width:100%;height:100%}
+.face__n{font-family:var(--d);font-weight:700;font-size:1.05rem;letter-spacing:.14em}
+.face__c{font-family:var(--d);font-weight:600;font-size:.72rem;letter-spacing:.14em;color:var(--cyan);margin-top:.15rem}
+.face__l{margin-top:.85rem;padding-top:.75rem;border-top:1px solid var(--line);font-size:.78rem;color:var(--dim);line-height:1.5}
+.box{border:1px solid var(--line);background:var(--panel);min-height:224px;padding:1.2rem 1.3rem;position:relative}
+.box__q{font-family:var(--d);font-weight:600;font-size:.76rem;letter-spacing:.16em;color:var(--mag);margin-bottom:.6rem}
+.box__a{line-height:1.75;color:var(--txt);min-height:5.2em}
+.box__a i{display:inline-block;width:9px;height:1.05em;background:var(--cyan);vertical-align:-2px;margin-left:2px;animation:cur .9s steps(1) infinite}
+@keyframes cur{50%{opacity:0}}
+.opts{margin-top:1.1rem;display:grid;gap:.35rem}
+.opt{
+  display:flex;align-items:center;gap:.6rem;text-align:left;padding:.55rem .8rem;
+  border:1px solid var(--line);font-size:.92rem;color:var(--dim);
+  transition:border-color .2s var(--ez),color .2s var(--ez),background .2s var(--ez),transform .2s var(--ez);
+}
+.opt::before{content:"▸";font-family:var(--d);color:var(--line);transition:color .2s var(--ez),transform .2s var(--ez)}
+.opt:hover,.opt[aria-pressed="true"]{border-color:var(--mag);color:var(--txt);background:var(--panel2);transform:translateX(3px)}
+.opt:hover::before,.opt[aria-pressed="true"]::before{color:var(--mag);transform:translateX(2px)}
+@media (max-width:720px){.talk{grid-template-columns:1fr}.face{display:flex;gap:1rem;align-items:center;text-align:left}
+  .face__h{margin:0;width:78px;height:78px;flex:none}.face__l{border-top:none;padding-top:0;margin-top:.3rem}}
+
+/* ── contact ── */
+.hit{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.8rem;margin-top:1.6rem}
+.cell{
+  position:relative;display:flex;flex-direction:column;gap:.15rem;text-align:left;
+  border:1px solid var(--line);background:var(--panel);padding:1rem 1.1rem;overflow:hidden;
+  transition:border-color .25s var(--ez),transform .2s var(--ez);
+}
+.cell:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.cell dt{font-family:var(--d);font-weight:600;font-size:.68rem;letter-spacing:.18em;color:var(--dim)}
+.cell dd{margin:0;font-family:var(--d);font-weight:700;font-size:1.02rem;letter-spacing:.03em;word-break:break-word}
+.cell small{font-size:.72rem;color:var(--dim);margin-top:.3rem;font-family:var(--d);letter-spacing:.1em}
+.cell.copied{border-color:var(--mint)}
+.cell.copied small{color:var(--mint)}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.8rem;margin-top:3rem;
+  padding-top:1.2rem;border-top:1px solid var(--line);font-size:.84rem;color:var(--dim)}
+
+@media (max-width:900px){
+  .pro__grid{grid-template-columns:1fr}
+  #radar{width:210px;height:210px;justify-self:start;opacity:.55;margin-top:1.5rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .tro{opacity:1;filter:none;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div id="xp"></div>
+
+<div id="boot">
+  <div class="boot__w">
+    <div class="boot__n">JAY</div>
+    <div class="boot__t">SENIOR UNITY DEVELOPER</div>
+    <div class="boot__bar"><i id="bfill"></i></div>
+    <div class="boot__s" id="bmsg">LOADING PROFILE</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<nav class="rail" aria-label="Sections">
+  <div class="rail__tag">MENU</div>
+  <ul>
+    <li><a href="#profile">PROFILE</a></li>
+    <li><a href="#games">GAMES</a></li>
+    <li><a href="#trophies">ACHIEVEMENTS</a></li>
+    <li><a href="#tree">SKILL TREE</a></li>
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="#contact">CONTACT</a></li>
+  </ul>
+</nav>
+
+<header class="bar">
+  <div class="shell bar__in">
+    <a class="sig" href="#profile"><i></i>JAY THAKOR</a>
+    <nav>
+      <a href="#games">GAMES</a><a href="#trophies">ACHIEVEMENTS</a>
+      <a href="#tree">SKILLS</a><a href="#about">ABOUT</a><a href="#contact">CONTACT</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="pro" id="profile">
+  <div class="shell pro__grid">
+    <div>
+      <div class="tagline">PLAYER PROFILE</div>
+      <h1>JAY<b>THAKOR</b></h1>
+      <div class="pro__role">Senior Unity Developer — Gameplay / Multiplayer / XR</div>
+      <p class="pro__lead">Six years in Unity and C#. I build the parts you feel — <b>combat that reads instantly</b>, movement with weight, netcode that holds a room together, and a frame budget that survives a headset.</p>
+      <dl class="stats">
+        <div><dt>EXPERIENCE</dt><dd>6+ yrs</dd></div>
+        <div><dt>SHIPPED</dt><dd id="nGames">—</dd></div>
+        <div><dt>PLATFORMS</dt><dd>5</dd></div>
+        <div><dt>ENGINE</dt><dd>Unity</dd></div>
+      </dl>
+      <div class="acts">
+        <a class="btn btn--p" href="#games">VIEW GAMES</a>
+        <a class="btn" href="#contact">CONTACT</a>
+      </div>
+    </div>
+    <canvas id="radar" aria-hidden="true"></canvas>
+  </div>
+</section>
+
+<section class="sec" id="games">
+  <div class="shell">
+    <div class="sec__h">
+      <div>
+        <h2>Game library</h2>
+        <p>Shipped work across desktop, headset and mobile. Open any title for the full breakdown.</p>
+      </div>
+      <span class="cnt" id="libCount">—</span>
+    </div>
+    <div class="lib" id="lib"></div>
+  </div>
+</section>
+
+<section class="sec" id="trophies">
+  <div class="shell">
+    <div class="sec__h">
+      <div>
+        <h2>Achievements</h2>
+        <p>Every one of these is earned from shipped work. Scroll and they unlock.</p>
+      </div>
+      <span class="cnt" id="troCount">0 UNLOCKED</span>
+    </div>
+    <div class="trophies" id="tro"></div>
+  </div>
+</section>
+
+<section class="sec" id="tree">
+  <div class="shell">
+    <div class="sec__h">
+      <div>
+        <h2>Skill tree</h2>
+        <p>Click a node to scan it — the path back to the trunk lights up and the readout tells you where it was used.</p>
+      </div>
+    </div>
+    <div class="tree">
+      <div class="tree__bar">
+        <span class="tree__pts">NODES SCANNED <b id="scanN">0</b> / <b id="scanT">0</b></span>
+        <span style="display:flex;gap:.5rem">
+          <button class="mini" id="scanAll">SCAN ALL</button>
+          <button class="mini" id="scanReset">RESET</button>
+        </span>
+      </div>
+      <div class="tree__sc" id="treewrap"></div>
+      <div class="tree__rd" id="read" role="status" aria-live="polite">
+        <strong>Unity + C#</strong>
+        <span>The trunk everything else grows from. Object-oriented design, SOLID, common patterns and clean architecture — written so the next person on the file can move fast.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="about">
+  <div class="shell">
+    <div class="sec__h">
+      <div>
+        <h2>About</h2>
+        <p>Ask me something. Pick a line and I'll answer.</p>
+      </div>
+    </div>
+    <div class="talk">
+      <div class="face">
+        <div class="face__h">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <polygon points="60,6 108,33 108,87 60,114 12,87 12,33" fill="#1A0F2C" stroke="#35204F" stroke-width="2"/>
+            <polygon id="ring" points="60,6 108,33 108,87 60,114 12,87 12,33" fill="none" stroke="#FF3D8B" stroke-width="2"
+                     stroke-dasharray="46 260" stroke-linecap="round"/>
+            <text x="60" y="72" text-anchor="middle" font-family="Rajdhani, sans-serif" font-weight="700"
+                  font-size="38" fill="#F2ECFF" letter-spacing="2">JT</text>
+          </svg>
+        </div>
+        <div class="face__n">JAY THAKOR</div>
+        <div class="face__c">SR. UNITY DEVELOPER</div>
+        <div class="face__l" id="eduBox"></div>
+      </div>
+      <div>
+        <div class="box">
+          <div class="box__q" id="qLine">SELECT A QUESTION</div>
+          <p class="box__a" id="aLine"></p>
+        </div>
+        <div class="opts" id="opts"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="contact">
+  <div class="shell">
+    <div class="sec__h">
+      <div>
+        <h2>Get in touch</h2>
+        <p>Tell me the platform, the frame budget and the deadline. I'll tell you honestly what fits. Tap any card to copy it.</p>
+      </div>
+    </div>
+    <div class="hit">
+      <button class="cell" data-copy="thakorjay069@gmail.com">
+        <dt>EMAIL</dt><dd>thakorjay069@gmail.com</dd><small>TAP TO COPY</small>
+      </button>
+      <button class="cell" data-copy="6352190148">
+        <dt>PHONE</dt><dd>+91 63521 90148</dd><small>TAP TO COPY</small>
+      </button>
+      <a class="cell" href="mailto:thakorjay069@gmail.com?subject=Unity%20project%20enquiry">
+        <dt>START A PROJECT</dt><dd>Open mail →</dd><small>REPLIES WITHIN A DAY</small>
+      </a>
+    </div>
+    <div class="foot">
+      <span>Jay Thakor — Senior Unity Developer</span>
+      <span id="year"></span>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div id="veil" role="dialog" aria-modal="true" aria-labelledby="mTitle"></div>
+
+<script>
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+document.getElementById("year").textContent = new Date().getFullYear();
+
+/* ═══════════════════════════════════════════════════════════
+   EDIT ME — everything below is your data. Nothing here is
+   invented; add your own real titles and degrees only.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Your education. Add M.Tech / a games diploma here when it's real:
+   {d:"M.Tech, Computer Engineering", s:"University name, year"}          */
+const EDU = [
+  {d:"B.Tech, Information Technology", s:""}
+];
+
+/* Your own published mobile / PC games.
+   Leave empty and the cards simply don't render.
+   Format:
+   {name:"Title", plat:"ANDROID", kind:"Hyper-casual runner", a:"var(--mint)",
+    role:"Solo developer", store:"https://play.google.com/store/apps/details?id=...",
+    desc:"One or two lines about it.",
+    did:["What you built.","What you built."],
+    tech:["Unity","C#","AdMob"], art:ART.blocks}                            */
+const MOBILE = [];
+
+/* ═══════════════════════════════════════════════════════════ */
+
+const ART = {
+  tree:`<svg viewBox="0 0 260 150" preserveAspectRatio="xMidYMid slice"><g stroke="var(--a)" stroke-width="2" fill="none" opacity=".55">
+    <path d="M130 128 V96"/><path d="M130 96 L88 62"/><path d="M130 96 L172 62"/><path d="M88 62 L62 34"/><path d="M88 62 L112 34"/><path d="M172 62 L198 34"/></g>
+    <g fill="var(--a)"><circle cx="130" cy="128" r="6"/><circle cx="130" cy="96" r="5"/><circle cx="88" cy="62" r="5"/><circle cx="172" cy="62" r="5"/><circle cx="62" cy="34" r="4"/><circle cx="112" cy="34" r="4"/><circle cx="198" cy="34" r="4"/></g></svg>`,
+  fog:`<svg viewBox="0 0 260 150" preserveAspectRatio="xMidYMid slice"><path d="M130 142 L70 30 L190 30 Z" fill="var(--a)" opacity=".18"/>
+    <g stroke="var(--a)" stroke-width="2" opacity=".5"><path d="M10 44 h72"/><path d="M170 66 h80"/><path d="M22 92 h56"/><path d="M180 112 h64"/></g>
+    <circle cx="130" cy="142" r="6" fill="var(--a)"/></svg>`,
+  sea:`<svg viewBox="0 0 260 150" preserveAspectRatio="xMidYMid slice"><path d="M92 78 h76 l-13 22 h-50 z" fill="var(--a)"/>
+    <path d="M126 78 V50 h22 v28" fill="none" stroke="var(--a)" stroke-width="2"/><path d="M130 50 V34" stroke="var(--a)" stroke-width="2"/>
+    <g stroke="var(--a)" stroke-width="2" fill="none" opacity=".6"><path d="M0 112 q16 -10 32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0"/>
+    <path d="M0 128 q16 -10 32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0" opacity=".5"/></g></svg>`,
+  lab:`<svg viewBox="0 0 260 150" preserveAspectRatio="xMidYMid slice"><path d="M116 32 v34 L88 116 a7 7 0 0 0 6 10 h72 a7 7 0 0 0 6 -10 L144 66 V32" fill="none" stroke="var(--a)" stroke-width="2"/>
+    <path d="M110 32 h40" stroke="var(--a)" stroke-width="2"/>
+    <path d="M100 100 h60 l8 16 a7 7 0 0 1 -6 10 h-64 a7 7 0 0 1 -6 -10 z" fill="var(--a)" opacity=".35"/>
+    <g fill="var(--a)"><circle cx="118" cy="108" r="4"/><circle cx="132" cy="116" r="3"/><circle cx="144" cy="106" r="3.5"/></g></svg>`,
+  net:`<svg viewBox="0 0 260 150" preserveAspectRatio="xMidYMid slice"><g stroke="var(--a)" stroke-width="2" opacity=".55" fill="none">
+    <path d="M78 52 L182 52"/><path d="M78 52 L130 116"/><path d="M182 52 L130 116"/></g>
+    <g fill="var(--a)"><circle cx="78" cy="52" r="14"/><circle cx="182" cy="52" r="14"/><circle cx="130" cy="116" r="14"/></g>
+    <g fill="var(--bg2)"><rect x="70" y="48" width="16" height="7" rx="3"/><rect x="174" y="48" width="16" height="7" rx="3"/><rect x="122" y="112" width="16" height="7" rx="3"/></g></svg>`,
+  blocks:`<svg viewBox="0 0 260 150" preserveAspectRatio="xMidYMid slice"><g fill="var(--a)">
+    <rect x="62" y="54" width="42" height="42" rx="8"/><rect x="110" y="54" width="42" height="42" rx="8"/><rect x="158" y="54" width="42" height="42" rx="8"/></g>
+    <g fill="var(--bg2)" font-family="Rajdhani, sans-serif" font-weight="700" font-size="24" text-anchor="middle">
+    <text x="83" y="84">A</text><text x="131" y="84">1</text><text x="179" y="84">+</text></g></svg>`
+};
+
+const CORE = [
+  {name:"Asura: Vengeance",plat:"PC",kind:"Action roguelike",a:"var(--mag)",role:"Sr Unity Game Developer",art:ART.tree,
+   desc:"An action rogue-like drawn from Indian mythology — procedural skill trees, hack-and-slash combat, and dungeons that rebuild themselves every run.",
+   did:["Built the combat: melee attacks, ability casting and the enemy behaviours that answer them.",
+        "Implemented the procedural skill progression system that shapes each run.",
+        "Wrote level gameplay logic for dungeon exploration and enemy encounters.",
+        "Tuned character animation and combat responsiveness so inputs read instantly.",
+        "Integrated UI for player stats, abilities and inventory.",
+        "Owned balancing, difficulty scaling and the progression curve."],
+   tech:["Unity3D","C#","Animation Controller","Procedural systems","UI Toolkit"]},
+
+  {name:"Smogshadow Hunter",plat:"PC",kind:"First-person shooter",a:"var(--cyan)",role:"Sr Unity Game Developer",art:ART.fog,
+   desc:"A first-person shooter set in a fog-filled warehouse. Malfunctioning robots hunt you back, visibility is near zero, and sound is the only dependable way to find anything.",
+   did:["Developed the FPS core: player movement, weapon mechanics and enemy AI.",
+        "Built fog-based environmental effects that cut visibility and drive the tension.",
+        "Designed and integrated multiple weapon systems, each with its own firing behaviour.",
+        "Implemented sound-based enemy detection and the audio feedback players navigate by.",
+        "Optimised performance for PC builds under heavy volumetric load.",
+        "Integrated HUD, health indicators and weapon status readouts."],
+   tech:["Unity Engine","C#","Physics system","Particle systems","PC build","Steam"]},
+
+  {name:"1971: Indian Naval Front",plat:"PC",kind:"Naval warfare simulation",a:"var(--amber)",role:"Sr Unity Game Developer",art:ART.sea,
+   desc:"A naval warfare simulation set in the 1971 India–Pakistan war, putting players in control of ships, aircraft and helicopters across historically grounded missions.",
+   did:["Developed naval combat systems including ship movement and weapon handling.",
+        "Wrote mission scripting for the historical naval operations.",
+        "Built AI behaviours for ships, aircraft and enemy units.",
+        "Designed weapon systems: missiles, torpedoes and anti-aircraft guns.",
+        "Integrated cockpit controls alongside third-person camera systems.",
+        "Delivered mission UI, radar and the naval combat HUD."],
+   tech:["Unity Engine","C#","Vehicle physics","AI systems","Particle effects","Audio systems","Steam SDK"]},
+
+  {name:"Chemistry Lab",plat:"VR",kind:"VR & WebGL simulation",a:"var(--mint)",role:"Senior Unity Developer — team lead",art:ART.lab,
+   desc:"An interactive 3D chemistry lab for VR and the browser. Students mix chemicals, heat substances, measure reactions and watch them play out — with none of the risk of the real bench.",
+   did:["Led a team of junior Unity developers: daily task assignment, coding standards and project upkeep.",
+        "Turned client requirements into a documented app flow and feature breakdown.",
+        "Built the interactive tooling for mixing, heating, measuring and observing reactions.",
+        "Unblocked the team on code conflicts and repository issues throughout the build.",
+        "Supported the release, resolving defects and live issues after handover."],
+   tech:["Unity","C#","Quest 2 / 3","OpenXR SDK","WebGL"]},
+
+  {name:"Virtual Meeting Room",plat:"VR",kind:"Multiplayer VR & Web",a:"var(--mag)",role:"Unity3D Developer",art:ART.net,
+   desc:"An immersive multiplayer meeting space where people collaborate in real time, with MetaMask wired in for wallet-based identity, authentication and in-space transactions.",
+   did:["Built out features from client requirements and documented the app flow.",
+        "Modelled, textured and optimised the 3D assets in Blender for real-time VR rendering.",
+        "Integrated MetaMask for identity, authentication and cryptocurrency transactions.",
+        "Helped the team resolve code conflicts and Git repository issues.",
+        "Provided ongoing support for defects in the live application."],
+   tech:["Unity","C#","Quest 2 / 3","MetaMask","Blender"]},
+
+  {name:"iLearnie",plat:"AR",kind:"Mobile AR learning game",a:"var(--amber)",role:"Unity3D Game Developer",art:ART.blocks,
+   desc:"An augmented-reality learning experience for children — letters, numbers, simple equations and animal names, lifted off the page and made playable.",
+   did:["Developed the AR learning interactions from client requirements.",
+        "Optimised models and runtime performance for smooth tracking on mid-range phones.",
+        "Ran user testing with children and folded the feedback back into engagement and clarity.",
+        "Supported the app post-launch across iOS and Android."],
+   tech:["Unity3D","C#","iOS","Android","AR"]}
+];
+
+const GAMES = CORE.concat(MOBILE);
+document.getElementById("nGames").textContent = GAMES.length;
+document.getElementById("libCount").textContent = GAMES.length + " TITLES";
+document.getElementById("eduBox").innerHTML =
+  EDU.map(e=>`<div>${e.d}${e.s?`<br><span style="opacity:.7">${e.s}</span>`:""}</div>`).join("");
+
+/* ═══════ game library + modal ═══════ */
+const lib = document.getElementById("lib"), veil = document.getElementById("veil");
+let lastFocus = null;
+
+GAMES.forEach((g,i)=>{
+  const b = document.createElement("button");
+  b.className = "game"; b.style.setProperty("--a", g.a); b.dataset.i = i;
+  b.innerHTML = `<span class="game__art">${g.art}<span class="game__b">${g.plat}</span><span class="game__glare"></span></span>
+    <span class="game__t"><h3>${g.name}</h3><p>${g.kind}</p><span class="game__go">OPEN FILE ▸</span></span>`;
+  b.addEventListener("pointermove",e=>{
+    const r = b.getBoundingClientRect();
+    const px = (e.clientX-r.left)/r.width, py = (e.clientY-r.top)/r.height;
+    b.style.setProperty("--mx", px*100+"%");
+    b.style.setProperty("--my", py*100+"%");
+    if(!RM) b.style.transform = `perspective(700px) rotateY(${(px-.5)*7}deg) rotateX(${(.5-py)*7}deg) translateY(-3px)`;
+  });
+  b.addEventListener("pointerleave",()=>b.style.transform="");
+  b.addEventListener("click",()=>openGame(i));
+  lib.appendChild(b);
+});
+
+function openGame(i){
+  const g = GAMES[i];
+  lastFocus = document.activeElement;
+  veil.innerHTML = `<div class="sheetx" style="--a:${g.a}">
+      <div class="sheetx__top"></div>
+      <div class="sheetx__b">
+        <button class="x" aria-label="Close">×</button>
+        <h3 id="mTitle">${g.name}</h3>
+        <div class="sheetx__m"><span>${g.plat}</span><span>${g.kind}</span><span>${g.role}</span></div>
+        <p class="sheetx__d">${g.desc}</p>
+        ${g.store?`<p style="margin-top:1rem"><a class="btn" href="${g.store}" target="_blank" rel="noopener">VIEW ON STORE</a></p>`:""}
+        <h4>WHAT I OWNED</h4>
+        <ul class="own">${g.did.map(d=>`<li>${d}</li>`).join("")}</ul>
+        <h4>BUILT WITH</h4>
+        <ul class="tg">${g.tech.map(t=>`<li>${t}</li>`).join("")}</ul>
+      </div></div>`;
+  veil.classList.add("on");
+  document.body.style.overflow = "hidden";
+  const close = veil.querySelector(".x");
+  close.addEventListener("click", shut);
+  close.focus();
+}
+function shut(){
+  veil.classList.remove("on"); veil.innerHTML = "";
+  document.body.style.overflow = "";
+  if(lastFocus) lastFocus.focus();
+}
+veil.addEventListener("click",e=>{ if(e.target===veil) shut(); });
+addEventListener("keydown",e=>{
+  if(e.key==="Escape" && veil.classList.contains("on")) shut();
+  if(e.key==="Tab" && veil.classList.contains("on")){
+    const f = veil.querySelectorAll("button,a[href]");
+    if(!f.length) return;
+    const first=f[0], last=f[f.length-1];
+    if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+  }
+});
+
+/* ═══════ achievements — all earned from shipped work ═══════ */
+const ICON = {
+  trophy:`<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v2a3 3 0 0 0 3 3"/><path d="M17 6h3v2a3 3 0 0 1-3 3"/><path d="M12 14v4"/><path d="M8 21h8l-1-3H9z"/>`,
+  shield:`<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>`,
+  cross:`<circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>`,
+  ear:`<path d="M6 12a6 6 0 1 1 12 0c0 3-2 4-3 5s-1 3-3 3a2.5 2.5 0 0 1-2.5-2.5"/><path d="M10 11a2 2 0 1 1 4 0c0 1.5-2 1.5-2 3"/>`,
+  wave:`<path d="M2 9q3-3 6 0t6 0 6 0"/><path d="M2 15q3-3 6 0t6 0 6 0"/>`,
+  net:`<circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="7" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.5 7h7M7.5 9.2l3.2 6.6M16.5 9.2l-3.2 6.6"/>`,
+  vr:`<rect x="2" y="8" width="20" height="9" rx="3"/><path d="M9.5 17c1-2 4-2 5 0"/>`,
+  crew:`<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5a3 3 0 0 1 0 6"/><path d="M17.5 20a6 6 0 0 0-2-4.5"/>`,
+  branch:`<circle cx="7" cy="5" r="2.5"/><circle cx="7" cy="19" r="2.5"/><circle cx="17" cy="9" r="2.5"/><path d="M7 7.5v9M7 13a6 6 0 0 1 6-6h1.5"/>`,
+  star:`<path d="M12 3l2.6 5.6 6 .8-4.4 4.2 1.1 6.1L12 16.8 6.7 19.7l1.1-6.1L3.4 9.4l6-.8z"/>`
+};
+const TROPHIES = [
+  {t:"First Blood",d:"Shipped a first commercial Unity title and kept shipping.",r:"COMMON",i:"trophy",a:"var(--amber)"},
+  {t:"Close Quarters",d:"Built melee combat, ability casting and reactive enemy behaviour for an action roguelike.",r:"UNCOMMON",i:"cross",a:"var(--mag)"},
+  {t:"Blind Fire",d:"Shipped sound-based enemy detection in a shooter where you can barely see.",r:"RARE",i:"ear",a:"var(--cyan)"},
+  {t:"Sea Legs",d:"Put ships, aircraft and helicopters on one physics budget in a naval warfare sim.",r:"RARE",i:"wave",a:"var(--amber)"},
+  {t:"Frame Perfect",d:"Optimised a volumetric, fog-heavy PC build until it held its frame rate.",r:"UNCOMMON",i:"shield",a:"var(--mint)"},
+  {t:"Room for Everyone",d:"Photon matchmaking, room creation and player synchronisation in production.",r:"UNCOMMON",i:"net",a:"var(--cyan)"},
+  {t:"Reality Bender",d:"Shipped to Quest 2 and 3, WebGL, Windows, iOS and Android.",r:"RARE",i:"vr",a:"var(--mag)"},
+  {t:"Squad Leader",d:"Led a team of junior Unity developers — tasks, standards, reviews, unblocking.",r:"EPIC",i:"crew",a:"var(--mint)"},
+  {t:"Conflict Resolved",d:"Owned branching, reviews, merge conflicts and CI/CD across release cycles.",r:"COMMON",i:"branch",a:"var(--cyan)"},
+  {t:"Full Clear",d:"Six titles shipped across three platform families in six years.",r:"LEGENDARY",i:"star",a:"var(--amber)"}
+];
+const troWrap = document.getElementById("tro"), troCount = document.getElementById("troCount");
+let unlocked = 0;
+TROPHIES.forEach(t=>{
+  const d = document.createElement("article");
+  d.className = "tro"; d.style.setProperty("--a", t.a);
+  d.innerHTML = `<span class="tro__i"><svg viewBox="0 0 24 24">${ICON[t.i]}</svg></span>
+    <span><h3>${t.t}</h3><p>${t.d}</p><span class="tro__r">${t.r}</span></span>`;
+  troWrap.appendChild(d);
+});
+const troEls = [...troWrap.children];
+if(RM){ troEls.forEach(e=>e.classList.add("got")); troCount.textContent = TROPHIES.length + " UNLOCKED"; }
+else{
+  const io = new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(!e.isIntersecting || e.target.classList.contains("got")) return;
+      const i = troEls.indexOf(e.target);
+      setTimeout(()=>{
+        e.target.classList.add("got");
+        unlocked++; troCount.textContent = unlocked + " UNLOCKED";
+      }, (i % 3) * 130);
+      io.unobserve(e.target);
+    });
+  },{threshold:.35});
+  troEls.forEach(e=>io.observe(e));
+}
+
+/* ═══════ skill tree ═══════ */
+const T = [
+  {id:"root",t:"Unity + C#",x:20,y:315,w:158,p:null,d:"The trunk everything else grows from. Object-oriented design, SOLID, common patterns and clean architecture — written so the next person on the file can move fast."},
+  {id:"gp",t:"Gameplay",x:246,y:92,w:148,p:"root",d:"The systems players touch directly, and the algorithms and data structures underneath them."},
+  {id:"mp",t:"Multiplayer",x:246,y:256,w:148,p:"root",d:"Keeping many players in agreement about one shared world, in real time."},
+  {id:"xr",t:"XR / AR / VR",x:246,y:400,w:148,p:"root",d:"Immersive builds for headsets, phones and the browser — where a dropped frame is felt in the stomach, not just seen."},
+  {id:"gx",t:"Graphics",x:246,y:520,w:148,p:"root",d:"Everything between the scene graph and the pixel: rendering, animation, particles, then the profiler pass."},
+  {id:"ops",t:"Pipeline",x:246,y:616,w:148,p:"root",d:"How the work gets from my machine to a build somebody can install."},
+
+  {id:"cmb",t:"Combat systems",x:516,y:32,w:212,p:"gp",d:"Melee attacks, ability casting, weapon variety and enemy behaviours that answer them — across Asura: Vengeance, Smogshadow Hunter and the 1971 naval sim."},
+  {id:"ctl",t:"Character controllers",x:516,y:90,w:212,p:"gp",d:"Movement with weight and readable response: first-person, third-person and vehicle. The layer players judge a game by within ten seconds."},
+  {id:"prc",t:"Procedural systems",x:516,y:148,w:212,p:"gp",d:"Procedural skill trees and progression for a roguelike that rebuilds itself every run, plus balancing and difficulty scaling."},
+  {id:"ai",t:"Enemy AI",x:516,y:206,w:212,p:"gp",d:"Robots hunting by sound in a fogged warehouse; ships, aircraft and enemy units across scripted historical missions."},
+
+  {id:"pho",t:"Photon engine",x:516,y:272,w:212,p:"mp",d:"Room creation, matchmaking, player synchronisation and session management for real-time multiplayer."},
+  {id:"mmo",t:"MMO systems",x:516,y:330,w:212,p:"mp",d:"Guilds and clans, leaderboards, inventory, in-game events, virtual economies and persistent-world mechanics."},
+  {id:"be",t:"Firebase & REST",x:796,y:301,w:206,p:"mp",d:"Backend for authentication, player data, cloud saves, analytics and live ops — plus AdMob and Steam integration."},
+
+  {id:"oxr",t:"OpenXR & Meta XR",x:516,y:396,w:212,p:"xr",d:"Cross-device XR on OpenXR and the Meta XR SDK, shipped to Quest 2 and 3, Windows, Mac and WebGL."},
+  {id:"vuf",t:"Vuforia AR",x:516,y:454,w:212,p:"xr",d:"Marker-based mobile AR — used for iLearnie, an AR learning game for children on iOS and Android."},
+
+  {id:"rnd",t:"Rendering & fog",x:516,y:518,w:212,p:"gx",d:"Real-time rendering, lighting, particle systems and the volumetric fog that makes Smogshadow Hunter almost unplayable on purpose."},
+  {id:"anm",t:"Physics & animation",x:516,y:576,w:212,p:"gx",d:"Animation controllers, vehicle and ragdoll physics, and 2D/3D animation workflows."},
+  {id:"bl",t:"Blender assets",x:796,y:547,w:206,p:"gx",d:"Modelling, texturing and optimising 3D assets for real-time VR, then landing them in Unity without blowing the budget."},
+
+  {id:"git",t:"Git & CI/CD",x:516,y:642,w:212,p:"ops",d:"GitHub, GitLab and GitHub Actions. Branching, code review, merge conflicts and release cycles."},
+  {id:"sdk",t:"Reusable modules",x:796,y:642,w:206,p:"ops",d:"Shared Unity modules and SDK packages that keep several projects consistent and cut repeat work."}
+];
+
+(function(){
+  const NS="http://www.w3.org/2000/svg", H=34;
+  const by = Object.fromEntries(T.map(n=>[n.id,n]));
+  const svg = document.createElementNS(NS,"svg");
+  svg.setAttribute("viewBox","0 0 1022 692");
+  svg.setAttribute("role","group"); svg.setAttribute("aria-label","Skill tree");
+  const gL = document.createElementNS(NS,"g"), gN = document.createElementNS(NS,"g");
+  svg.append(gL,gN);
+
+  T.forEach(n=>{
+    if(!n.p) return;
+    const a = by[n.p], x1=a.x+a.w, y1=a.y, x2=n.x, y2=n.y, mx=(x1+x2)/2;
+    const p = document.createElementNS(NS,"path");
+    p.setAttribute("d",`M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`);
+    p.setAttribute("class","lk"); p.dataset.to = n.id;
+    gL.appendChild(p);
+  });
+  T.forEach(n=>{
+    const g = document.createElementNS(NS,"g");
+    g.setAttribute("class","nd"); g.setAttribute("tabindex","0");
+    g.setAttribute("role","button"); g.setAttribute("aria-label",n.t);
+    g.dataset.id = n.id;
+    const r = document.createElementNS(NS,"rect");
+    r.setAttribute("x",n.x); r.setAttribute("y",n.y-H/2);
+    r.setAttribute("width",n.w); r.setAttribute("height",H); r.setAttribute("rx",3);
+    const t = document.createElementNS(NS,"text");
+    t.setAttribute("x",n.x+n.w/2); t.setAttribute("y",n.y+5.5);
+    t.setAttribute("text-anchor","middle"); t.textContent = n.t;
+    g.append(r,t); gN.appendChild(g);
+  });
+  document.getElementById("treewrap").appendChild(svg);
+
+  const nodes=[...gN.children], links=[...gL.children];
+  const read=document.getElementById("read");
+  const scanN=document.getElementById("scanN"), scanT=document.getElementById("scanT");
+  scanT.textContent = T.length;
+  const scanned = new Set();
+
+  function chainOf(id){
+    const s=new Set(); let c=by[id];
+    while(c){ s.add(c.id); c = c.p ? by[c.p] : null; }
+    return s;
+  }
+  function lightPath(id){
+    const s = chainOf(id);
+    nodes.forEach(n=>n.classList.toggle("lit", s.has(n.dataset.id)));
+    links.forEach(l=>{
+      const to = by[l.dataset.to];
+      l.classList.toggle("lit", s.has(to.id) && s.has(to.p));
+    });
+    read.innerHTML = `<strong>${by[id].t}</strong><span>${by[id].d}</span>`;
+  }
+  function clearPath(){
+    nodes.forEach(n=>n.classList.remove("lit"));
+    links.forEach(l=>l.classList.remove("lit"));
+  }
+  function scan(id, el){
+    if(scanned.has(id)) return;
+    scanned.add(id); el.classList.add("scan");
+    el.classList.remove("pulse"); void el.offsetWidth; el.classList.add("pulse");
+    scanN.textContent = scanned.size;
+  }
+  nodes.forEach(n=>{
+    const id = n.dataset.id;
+    n.addEventListener("pointerenter",()=>lightPath(id));
+    n.addEventListener("focus",()=>lightPath(id));
+    n.addEventListener("click",()=>{ lightPath(id); scan(id,n); });
+    n.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); lightPath(id); scan(id,n); }
+    });
+  });
+  svg.addEventListener("pointerleave",clearPath);
+
+  document.getElementById("scanAll").addEventListener("click",()=>{
+    nodes.forEach((n,i)=>setTimeout(()=>scan(n.dataset.id,n), RM?0:i*45));
+  });
+  document.getElementById("scanReset").addEventListener("click",()=>{
+    scanned.clear(); scanN.textContent = 0;
+    nodes.forEach(n=>n.classList.remove("scan","pulse"));
+  });
+})();
+
+/* ═══════ about: dialogue with typewriter ═══════ */
+const QA = [
+  {q:"What do you actually build?",
+   a:"The layer between design intent and the frame that ships. Somebody says \"this fight should feel heavy\" and I turn it into hit pauses, animation cancels, AI that commits to a swing, and a profiler graph that stays flat while it all runs. Combat, movement, netcode, and the optimisation pass afterwards."},
+  {q:"Why Unity, six years in?",
+   a:"Because it lets me go from a rough idea to something playable in an afternoon, then stay in the same codebase all the way to a Steam build or a Quest APK. I've shipped roguelikes, shooters, naval sims, VR simulations and mobile AR out of one engine and one language. That range is the reason."},
+  {q:"What was the hardest thing you shipped?",
+   a:"The 1971 naval sim. Ships, aircraft and helicopters all had to live in one physics budget, each with its own control feel, plus missiles, torpedoes, anti-aircraft guns, radar and mission scripting. Getting a destroyer and a helicopter to feel correct in the same build is mostly a scoping problem, not a coding one."},
+  {q:"How do you work with a team?",
+   a:"On the chemistry lab I led the junior Unity developers — assigning daily work, holding the coding standard, reviewing, and unblocking people on merge conflicts before they turned into a bad afternoon. I'd rather spend an hour on a review than a day on a rewrite."},
+  {q:"What about XR specifically?",
+   a:"OpenXR and the Meta XR SDK for headset work, Vuforia for marker-based mobile AR. Quest 2 and 3, WebGL, Windows, iOS and Android. XR punishes you differently from flat games — a dropped frame isn't ugly, it's physically unpleasant, so the optimisation pass starts on day one instead of the last sprint."},
+  {q:"What are you looking for next?",
+   a:"Gameplay or XR work where the feel matters and somebody actually cares about the frame budget. I'm happiest owning a system end to end — combat, netcode, a whole XR interaction layer — rather than picking off tickets around the edges."}
+];
+const opts=document.getElementById("opts"), qL=document.getElementById("qLine"), aL=document.getElementById("aLine");
+let typer=null;
+QA.forEach((x,i)=>{
+  const b=document.createElement("button");
+  b.className="opt"; b.type="button"; b.textContent=x.q;
+  b.setAttribute("aria-pressed","false");
+  b.addEventListener("click",()=>say(i));
+  opts.appendChild(b);
+});
+const optEls=[...opts.children];
+function say(i){
+  optEls.forEach((b,n)=>b.setAttribute("aria-pressed",String(n===i)));
+  qL.textContent = QA[i].q.toUpperCase();
+  const full = QA[i].a;
+  clearInterval(typer);
+  if(RM){ aL.textContent = full; return; }
+  let n=0;
+  aL.innerHTML = "<i></i>";
+  typer = setInterval(()=>{
+    n += 3;
+    if(n>=full.length){ aL.textContent = full; clearInterval(typer); return; }
+    aL.innerHTML = full.slice(0,n).replace(/</g,"&lt;") + "<i></i>";
+  }, 12);
+}
+say(0);
+
+/* portrait ring */
+(function(){
+  const ring=document.getElementById("ring"); if(!ring||RM) return;
+  let o=0;
+  setInterval(()=>{ o-=2; ring.setAttribute("stroke-dashoffset",o); },40);
+})();
+
+/* ═══════ radar ═══════ */
+(function(){
+  const cv=document.getElementById("radar"); if(!cv) return;
+  const ctx=cv.getContext("2d");
+  let S=0,dpr=1;
+  const blips=GAMES.map((g,i)=>({a:(i/GAMES.length)*6.283+0.4, r:0.34+((i*0.13)%0.5), hit:0}));
+  function fit(){
+    dpr=Math.min(devicePixelRatio||1,2);
+    S=cv.clientWidth; cv.width=S*dpr; cv.height=S*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  let sweep=0,last=performance.now();
+  function loop(now){
+    const dt=Math.min((now-last)/1000,.05); last=now;
+    if(!RM) sweep=(sweep+dt*0.65)%6.283;
+    const c=S/2, R=S/2-6;
+    ctx.clearRect(0,0,S,S);
+
+    ctx.strokeStyle="rgba(155,140,192,.22)"; ctx.lineWidth=1;
+    [1,.72,.46,.22].forEach(k=>{ ctx.beginPath(); ctx.arc(c,c,R*k,0,6.283); ctx.stroke(); });
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3;
+      ctx.beginPath(); ctx.moveTo(c,c); ctx.lineTo(c+Math.cos(a)*R, c+Math.sin(a)*R); ctx.stroke();
+    }
+    const grad=ctx.createConicGradient?ctx.createConicGradient(sweep,c,c):null;
+    if(grad){
+      grad.addColorStop(0,"rgba(46,230,255,.30)");
+      grad.addColorStop(.10,"rgba(46,230,255,0)");
+      grad.addColorStop(1,"rgba(46,230,255,0)");
+      ctx.fillStyle=grad;
+      ctx.beginPath(); ctx.arc(c,c,R,0,6.283); ctx.fill();
+    }
+    ctx.strokeStyle="rgba(46,230,255,.75)"; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(c,c); ctx.lineTo(c+Math.cos(sweep)*R, c+Math.sin(sweep)*R); ctx.stroke();
+
+    blips.forEach(b=>{
+      let d=(sweep-b.a+6.283)%6.283;
+      if(d<0.06) b.hit=1;
+      b.hit=Math.max(0,b.hit-dt*0.42);
+      const x=c+Math.cos(b.a)*R*b.r, y=c+Math.sin(b.a)*R*b.r;
+      ctx.beginPath(); ctx.arc(x,y,3.2,0,6.283);
+      ctx.fillStyle=`rgba(255,61,139,${.25+b.hit*.75})`; ctx.fill();
+      if(b.hit>.05){
+        ctx.beginPath(); ctx.arc(x,y,3.2+(1-b.hit)*11,0,6.283);
+        ctx.strokeStyle=`rgba(255,61,139,${b.hit*.5})`; ctx.lineWidth=1.4; ctx.stroke();
+      }
+    });
+    requestAnimationFrame(loop);
+  }
+  addEventListener("resize",fit,{passive:true});
+  fit(); requestAnimationFrame(loop);
+})();
+
+/* ═══════ copy to clipboard ═══════ */
+document.querySelectorAll("[data-copy]").forEach(el=>{
+  el.addEventListener("click",async()=>{
+    const small = el.querySelector("small"), was = small.textContent;
+    try{ await navigator.clipboard.writeText(el.dataset.copy); small.textContent="COPIED ✓"; }
+    catch{ small.textContent="PRESS CTRL+C"; }
+    el.classList.add("copied");
+    setTimeout(()=>{ small.textContent=was; el.classList.remove("copied"); },1800);
+  });
+});
+
+/* ═══════ xp bar + rail sync ═══════ */
+const xp=document.getElementById("xp");
+const railLinks=[...document.querySelectorAll(".rail a")];
+const secs=railLinks.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+function onScroll(){
+  const h=document.documentElement.scrollHeight-innerHeight;
+  xp.style.width=(h>0?(scrollY/h)*100:0)+"%";
+  let cur=0;
+  secs.forEach((s,i)=>{ if(s.getBoundingClientRect().top<=innerHeight*0.4) cur=i; });
+  railLinks.forEach((a,i)=>a.setAttribute("aria-current",String(i===cur)));
+}
+addEventListener("scroll",onScroll,{passive:true});
+onScroll();
+
+/* ═══════ boot sequence ═══════ */
+(function(){
+  const el=document.getElementById("boot"), fill=document.getElementById("bfill"), msg=document.getElementById("bmsg");
+  const steps=["LOADING PROFILE","MOUNTING GAME LIBRARY","BUILDING SKILL TREE","READY"];
+  function done(){ el.classList.add("off"); setTimeout(()=>el.remove(),520); }
+  if(RM){ done(); return; }
+  let p=0,i=0;
+  const t=setInterval(()=>{
+    p+=Math.random()*16+7;
+    if(p>=100){ p=100; clearInterval(t); msg.textContent=steps[3]; setTimeout(done,240); }
+    else{ const n=Math.min(2,Math.floor(p/34)); if(n!==i){ i=n; msg.textContent=steps[n]; } }
+    fill.style.width=p+"%";
+  },95);
+  const skip=()=>{ clearInterval(t); done(); };
+  el.addEventListener("click",skip);
+  addEventListener("keydown",skip,{once:true});
+})();
+</script>
+</body>
+</html>
